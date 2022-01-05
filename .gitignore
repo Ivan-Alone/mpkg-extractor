@@ -1,0 +1,4 @@
+*.mpkg
+*.exe
+.vscode
+.git
