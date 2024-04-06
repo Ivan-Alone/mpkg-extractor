@@ -202,11 +202,6 @@ end:
 	return 0;
 }
 
-// Evil & lazy hack
-#ifdef _WIN32
-#undef mkdir
-#define mkdir(path) _mkdir(path)
-#endif
 // Recursive mkdir
 // (https://gist.github.com/JonathonReinhart/8c0d90191c38af2dcadb102c4e202950)
 int mkdir_p(const char* path)
@@ -234,7 +229,11 @@ int mkdir_p(const char* path)
 			/* Temporarily truncate */
 			*p = '\0';
 
+#ifdef _WIN32
+			if (_mkdir(_path) != 0)
+#else
 			if (mkdir(_path, S_IRWXU) != 0)
+#endif
 			{
 				if (errno != EEXIST)
 					return -1;
@@ -244,7 +243,11 @@ int mkdir_p(const char* path)
 		}
 	}
 
+#ifdef _WIN32
+	if (_mkdir(_path) != 0)
+#else
 	if (mkdir(_path, S_IRWXU) != 0)
+#endif
 	{
 		if (errno != EEXIST)
 			return -1;
